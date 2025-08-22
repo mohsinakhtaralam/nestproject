@@ -32,10 +32,9 @@ pipeline {
         }
         stage('start container') {
             steps {
-                script {
+               
                     sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${CONTAINER_IMAGE}"
-                }
-            }
+               
         }
     }
 }
