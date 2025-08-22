@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    environment {
+        CONTAINER_IMAGE  = 'nestjs_image' // Replace with your Docker Hub credentials ID
+        CONTAINER_NAME   = 'nestjs_container'
+        PORT             = '3000'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/mohsinakhtaralam/nestjsproject.git'
+            }
+        }
+
+        stage('Docker container image build') {
+            steps {
+                script {
+                    sh "docker build -t ${CONTAINER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Stop and Remove Existing Container') {
+            steps {
+                sh """
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+                """
+            }
+        }
+        stage('start container') {
+            steps {
+                script {
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${CONTAINER_IMAGE}"
+                }
+            }
+        }
+    }
+}
